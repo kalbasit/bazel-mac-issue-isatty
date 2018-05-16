@@ -1,0 +1,138 @@
+workspace(name = "com_getpublica_platform")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+#
+# Golang
+#
+
+http_archive(
+    name = "io_bazel_rules_go",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.12.0/rules_go-0.12.0.tar.gz",
+    sha256 = "c1f52b8789218bb1542ed362c4f7de7052abcf254d865d96fb7ba6d44bc15ee3",
+)
+
+http_archive(
+    name = "bazel_gazelle",
+    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
+    sha256 = "ddedc7aaeb61f2654d7d7d4fd7940052ea992ccdb031b8f9797ed143ac7e8d43",
+)
+
+#
+# Docker
+#
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "6dede2c65ce86289969b907f343a1382d33c14fbce5e30dd17bb59bb55bb6593",
+    strip_prefix = "rules_docker-0.4.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.4.0.tar.gz"],
+)
+
+#
+# Node
+#
+
+RULES_NODE_COMMIT = "0.4.1"  # Update to current HEAD
+
+RULES_NODE_SHA256 = "55ac7183ae639a33fcde353173328380d91a3d4a78d8f1a0e8bd1d88cd35a32b"
+
+git_repository(
+    name = "org_pubref_rules_protobuf",
+    remote = "https://github.com/pubref/rules_protobuf",
+    tag = "v0.8.2",
+)
+
+http_archive(
+    name = "org_pubref_rules_node",
+    url = "https://github.com/pubref/rules_node/archive/v%s.zip" % RULES_NODE_COMMIT,
+    strip_prefix = "rules_node-%s" % RULES_NODE_COMMIT,
+    sha256 = RULES_NODE_SHA256,
+)
+
+#
+# Golang
+#
+
+load(
+    "@io_bazel_rules_go//go:def.bzl",
+    "go_rules_dependencies",
+    "go_register_toolchains",
+)
+
+go_rules_dependencies()
+
+# The Go version here must match the version in .tool-versions
+go_register_toolchains(go_version = "1.10.2")
+
+load(
+    "@bazel_gazelle//:deps.bzl",
+    "gazelle_dependencies",
+    "go_repository",
+)
+
+gazelle_dependencies()
+
+#
+# Docker
+#
+
+load(
+    "@io_bazel_rules_docker//go:image.bzl",
+    _go_image_repos = "repositories",
+)
+
+_go_image_repos()
+
+#
+# Node
+#
+
+load("@org_pubref_rules_node//node:rules.bzl", "node_repositories")
+
+node_repositories()
+
+load("@org_pubref_rules_protobuf//node:rules.bzl", "node_proto_repositories")
+
+node_proto_repositories()
+
+#
+# External dependencies loaded by gazelle
+#
+
+go_repository(
+    name = "com_github_coreos_etcd",
+    commit = "70c8726202dd91e482fb4029fd14af1d4ed1d5af",
+    importpath = "github.com/coreos/etcd",
+)
+
+go_repository(
+    name = "com_github_coreos_go_semver",
+    commit = "8ab6407b697782a06568d4b7f1db25550ec2e4c6",
+    importpath = "github.com/coreos/go-semver",
+)
+
+go_repository(
+    name = "com_github_davecgh_go_spew",
+    commit = "346938d642f2ec3594ed81d874461961cd0faa76",
+    importpath = "github.com/davecgh/go-spew",
+)
+
+go_repository(
+    name = "com_github_pmezard_go_difflib",
+    commit = "792786c7400a136282c1664665ae0a8db921c6c2",
+    importpath = "github.com/pmezard/go-difflib",
+)
+
+go_repository(
+    name = "com_github_stretchr_testify",
+    commit = "12b6f73e6084dad08a7c6e575284b177ecafbc71",
+    importpath = "github.com/stretchr/testify",
+)
+
+go_repository(
+    name = "com_github_ugorji_go",
+    commit = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab",
+    importpath = "github.com/ugorji/go",
+)
