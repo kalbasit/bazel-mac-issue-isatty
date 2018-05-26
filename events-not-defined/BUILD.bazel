@@ -1,0 +1,44 @@
+# gazelle:exclude vendor
+
+#
+# Golang
+#
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+gazelle(
+    name = "gazelle",
+    command = "fix",
+    external = "external",
+    extra_args = [
+        "-build_file_name",
+        "BUILD.bazel",
+    ],
+    prefix = "github.com/publica-project/platform/src",
+)
+
+#
+# Typescript
+#
+
+exports_files(["tsconfig.json"])
+
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
+
+ts_library(
+    name = "lib",
+    srcs = ["lib.ts"],
+    node_modules = "@root_node_modules//:node_modules",
+    tsconfig = "//:tsconfig.json",
+    visibility = ["//visibility:private"],
+)
+
+rollup_bundle(
+    name = "bundle",
+    entry_point = "lib",
+    node_modules = "@root_node_modules//:node_modules",
+    deps = [":lib"],
+)
+

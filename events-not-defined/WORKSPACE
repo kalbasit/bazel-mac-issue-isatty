@@ -1,0 +1,143 @@
+workspace(name = "com_getpublica_platform")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+#
+# Golang
+#
+
+http_archive(
+    name = "io_bazel_rules_go",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.12.0/rules_go-0.12.0.tar.gz",
+    sha256 = "c1f52b8789218bb1542ed362c4f7de7052abcf254d865d96fb7ba6d44bc15ee3",
+)
+
+http_archive(
+    name = "bazel_gazelle",
+    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
+    sha256 = "ddedc7aaeb61f2654d7d7d4fd7940052ea992ccdb031b8f9797ed143ac7e8d43",
+)
+
+#
+# Docker
+#
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "6dede2c65ce86289969b907f343a1382d33c14fbce5e30dd17bb59bb55bb6593",
+    strip_prefix = "rules_docker-0.4.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.4.0.tar.gz"],
+)
+
+#
+# Node
+#
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.9.1.zip",
+    strip_prefix = "rules_nodejs-0.9.1",
+    sha256 = "6139762b62b37c1fd171d7f22aa39566cb7dc2916f0f801d505a9aaf118c117f",
+)
+
+#
+# WebTesting
+#
+
+http_archive(
+    name = "io_bazel_rules_webtesting",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/ffdfc36c9ef0c096c05ebf7d898233bc491f4746.zip",
+    strip_prefix = "rules_webtesting-ffdfc36c9ef0c096c05ebf7d898233bc491f4746",
+    sha256 = "15703fdc1db604a56c59196d7ff0467e99ede2623dcd92d0b3ea3544d2841982",
+)
+
+#
+# Typescript
+#
+
+http_archive(
+    name = "build_bazel_rules_typescript",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.14.0.zip",
+    strip_prefix = "rules_typescript-0.14.0",
+    sha256 = "90aa6e1996a14cedfbe64445d5dcf8bbaeec8292cbb177bc9002e77543bc731f",
+)
+
+#
+# Golang
+#
+
+load(
+    "@io_bazel_rules_go//go:def.bzl",
+    "go_rules_dependencies",
+    "go_register_toolchains",
+)
+
+go_rules_dependencies()
+
+# The Go version here must match the version in .tool-versions
+go_register_toolchains(go_version = "1.10.2")
+
+load(
+    "@bazel_gazelle//:deps.bzl",
+    "gazelle_dependencies",
+    "go_repository",
+)
+
+gazelle_dependencies()
+
+#
+# Docker
+#
+
+load(
+    "@io_bazel_rules_docker//go:image.bzl",
+    _go_image_repos = "repositories",
+)
+
+_go_image_repos()
+
+#
+# Node
+#
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
+
+# NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
+# your npm dependencies into your node_modules folder.
+# You must still run the package manager to do this.
+node_repositories(
+    package_json = [
+        "//:package.json",
+    ],
+    node_version = "8.11.1",
+    yarn_version = "1.6.0",
+)
+
+yarn_install(
+    name = "root_node_modules",
+    package_json = "//:package.json",
+    yarn_lock = "//:yarn.lock",
+)
+
+
+#
+# WebTesting
+#
+
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
+
+web_test_repositories()
+
+browser_repositories(
+    chromium = True,
+    firefox = False, # TODO(PLAT-206): enable Firefox once the CI includes the binary
+)
+
+#
+# Typescript
+#
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
+
+ts_setup_workspace()
