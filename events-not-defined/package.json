@@ -1,6 +1,7 @@
 {
   "license": "UNLICENSED",
   "dependencies": {
+    "events": "^3.0.0",
     "md5": "^2.2.1"
   },
   "devDependencies": {
