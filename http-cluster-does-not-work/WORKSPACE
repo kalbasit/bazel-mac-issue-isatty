@@ -1,0 +1,29 @@
+workspace(name = "com_github_kalbasit_bazel")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "6139762b62b37c1fd171d7f22aa39566cb7dc2916f0f801d505a9aaf118c117f",
+    strip_prefix = "rules_nodejs-0.9.1",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.9.1.zip",
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
+
+# NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
+# your npm dependencies into your node_modules folder.
+# You must still run the package manager to do this.
+node_repositories(
+    node_version = "8.11.1",
+    package_json = [
+        "//:package.json",
+    ],
+    yarn_version = "1.6.0",
+)
+
+yarn_install(
+    name = "root_node_modules",
+    package_json = "//:package.json",
+    yarn_lock = "//:yarn.lock",
+)
