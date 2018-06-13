@@ -30,7 +30,8 @@ function forkProcess(cfg) {
 		console.log(`received message ${msg}`);
   });
   worker.on('exit', function() {
-    restartProcess(cfg, worker);
+    // TODO: disable restarting the process to avoid the circular loop
+    // restartProcess(cfg, worker);
   });
 }
 
