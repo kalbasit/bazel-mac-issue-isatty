@@ -1,6 +1,8 @@
 # gazelle:exclude vendor
 # gazelle:exclude node_modules
 
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
 #
 # Golang
 #
@@ -35,4 +37,17 @@ load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
 
 buildifier(
     name = "buildifier",
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = ["nixos.go"],
+    importpath = "github.com/kalbasit/bazel-reproducible/nixos",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["nixos_test.go"],
+    embed = [":go_default_library"],
 )
