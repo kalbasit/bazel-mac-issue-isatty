@@ -128,7 +128,6 @@ node_repositories(
 
 yarn_install(
     name = "root_node_modules",
-    data = ["//:.npmrc"],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )

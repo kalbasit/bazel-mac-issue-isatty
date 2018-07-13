@@ -39,6 +39,8 @@ buildifier(
     name = "buildifier",
 )
 
+# packages
+
 go_library(
     name = "go_default_library",
     srcs = ["nixos.go"],
@@ -50,4 +52,22 @@ go_test(
     name = "go_default_test",
     srcs = ["nixos_test.go"],
     embed = [":go_default_library"],
+)
+
+# This is like a "js_library", but there are no actions to run on JS files so a
+# filegroup is semantically equivalent.
+filegroup(
+    name = "program",
+    srcs = ["index.js"],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["*.spec.js"]),
+    node_modules = "@root_node_modules//:node_modules",
+    deps = [
+        ":program",
+    ],
 )
