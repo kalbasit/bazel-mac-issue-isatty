@@ -75,6 +75,17 @@ load(
     "go_rules_dependencies",
 )
 
+#
+# Tools
+#
+
+http_archive(
+    name = "com_github_bazelbuild_buildtools",
+    sha256 = "ec495cbd19238c9dc488fd65ca1fee56dcb1a8d6d56ee69a49f2ebe69826c261",
+    strip_prefix = "buildtools-0.12.0",
+    url = "https://github.com/bazelbuild/buildtools/archive/0.12.0.zip",
+)
+
 go_rules_dependencies()
 
 # The Go version here must match the version in .tool-versions
@@ -87,17 +98,6 @@ load(
 )
 
 gazelle_dependencies()
-
-#
-# Tools
-#
-
-http_archive(
-    name = "com_github_bazelbuild_buildtools",
-    sha256 = "ec495cbd19238c9dc488fd65ca1fee56dcb1a8d6d56ee69a49f2ebe69826c261",
-    strip_prefix = "buildtools-0.12.0",
-    url = "https://github.com/bazelbuild/buildtools/archive/0.12.0.zip",
-)
 
 #
 # Docker
