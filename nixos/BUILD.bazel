@@ -1,7 +1,6 @@
 # gazelle:exclude vendor
 # gazelle:exclude node_modules
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 #
 # Golang
@@ -40,34 +39,3 @@ buildifier(
 )
 
 # packages
-
-go_library(
-    name = "go_default_library",
-    srcs = ["nixos.go"],
-    importpath = "github.com/kalbasit/bazel-reproducible/nixos",
-    visibility = ["//visibility:public"],
-)
-
-go_test(
-    name = "go_default_test",
-    srcs = ["nixos_test.go"],
-    embed = [":go_default_library"],
-)
-
-# This is like a "js_library", but there are no actions to run on JS files so a
-# filegroup is semantically equivalent.
-filegroup(
-    name = "program",
-    srcs = ["index.js"],
-)
-
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
-
-jasmine_node_test(
-    name = "test",
-    srcs = glob(["*.spec.js"]),
-    node_modules = "@root_node_modules//:node_modules",
-    deps = [
-        ":program",
-    ],
-)

@@ -121,15 +121,15 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install"
 node_repositories(
     node_version = "8.11.1",
     package_json = [
-        "//:package.json",
+        "//rules_nodejs:package.json",
     ],
     yarn_version = "1.6.0",
 )
 
 yarn_install(
     name = "root_node_modules",
-    package_json = "//:package.json",
-    yarn_lock = "//:yarn.lock",
+    package_json = "//rules_nodejs:package.json",
+    yarn_lock = "//rules_nodejs:yarn.lock",
 )
 
 #
